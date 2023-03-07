@@ -75,8 +75,8 @@ class Position(object):
 
     def evaluate_state_ending(self):
         """
-        Heuristika koja uzima samo vrednost figure kao broj
-        Basic heuristic that only counts the piece value
+        A heuristic that only considers the figure value as a number
+        Basic heuristic that only counts the part value
         :return:
         """
         white_value = 0
@@ -96,7 +96,7 @@ class Position(object):
 
     # def evaluate_state(self):
     #     """
-    #     Heuristika koja uzima u obzir i koliko je figure pomerena na tabli
+    #     A heuristic that also takes into account how many pieces have been moved on the board
     #     :return:
     #     """
     #     white_value = 0
@@ -140,9 +140,9 @@ class Position(object):
 
     def evaluate_state(self):
         """
-        Heuristika koja uzima u obzir i koliko je figure pomerena na tabli
-        i koliko je figure ostalo na tabli. Takodje ima drugačiju heuristiku za pozicije kada se igra približi kraju
-        Still a basic heuristic but it takes into account piece position as well as the piece value
+        A heuristic that also takes into account how many pieces have been moved on the board
+        and how many pieces are left on the board. It also has a different heuristic for positions when the game is nearing the end
+        Still a basic heuristic, but it takes into account the piece position as well as the piece value
         :return:
         """
         white_value = 0
@@ -154,7 +154,7 @@ class Position(object):
             for j in range(len(self._table[i])):
                 if self._table[i][j] == 'b':
                     num_white += 1
-                    if 2 < i < 5 and 1 < j < 6:  # kontrola centra
+                    if 2 < i < 5 and 1 < j < 6:  # Central control
                         white_value += 50
                     elif i < 4:
                         white_value += 45
@@ -165,7 +165,7 @@ class Position(object):
                     white_value += 60
                 if self._table[i][j] == 'c':
                     num_black += 1
-                    if 2 < i < 5 and 1 < j < 6:  # kontrola centra
+                    if 2 < i < 5 and 1 < j < 6:  # Central control
                         black_value += 50
                     elif i > 3:
                         black_value += 45
@@ -183,58 +183,6 @@ class Position(object):
             self._evaluation = -inf
             self._game_end = True
         return self._evaluation
-
-    # def evaluate_state_ending(self, prethodni_broj=None):
-    #     """
-    #     Heuristika za kraj partije, koja daje prioritet smanjenju broja figure
-    #     :return:
-    #     """
-    #     white_value = 0
-    #     black_value = 0
-    #     num_white = 0
-    #     num_black = 0
-    #
-    #     white_kings = 0
-    #     black_kings = 0
-    #
-    #     for i in range(len(self._table)):
-    #         for j in range(len(self._table[i])):
-    #             if self._table[i][j] == 'b':
-    #                 num_white += 1
-    #                 if 2 < i < 5 and 1 < j < 6:  # kontrola centra
-    #                     white_value += 50
-    #                 elif i < 4:
-    #                     white_value += 45
-    #                 else:
-    #                     white_value += 40
-    #             if self._table[i][j] == 'B':
-    #                 white_kings += 1
-    #                 num_white += 1
-    #                 white_value += 60
-    #             if self._table[i][j] == 'c':
-    #                 num_black += 1
-    #                 if 2 < i < 5 and 1 < j < 6:  # kontrola centra
-    #                     black_value += 50
-    #                 elif i > 3:
-    #                     black_value += 45
-    #                 else:
-    #                     black_value += 40
-    #             if self._table[i][j] == 'C':
-    #                 black_kings += 1
-    #                 num_black += 1
-    #                 black_value += 60
-    #
-    #     # prethodna_razlika = prethodni_broj[1] - prethodni_broj[0]  # broj crnih - broj belih
-    #     self._evaluation = int(round(((1000 * (black_value - white_value)) / (num_white + num_black))))
-    #
-    #
-    #     if num_white == 0:
-    #         self._evaluation = inf
-    #         self._game_end = True
-    #     if num_black == 0:
-    #         self._evaluation = -inf
-    #         self._game_end = True
-    #     return self._evaluation
 
     def generate_next_moves(self, forced=False):
         self._next_moves = []
@@ -287,14 +235,14 @@ class Position(object):
         table_copy = deepcopy(self._table)
         figure_type = table_copy[figure[0]][figure[1]]
         if figure_type == "b" or figure_type == "B":
-            if move[0] == 0:  # kada dodje do kraja
+            if move[0] == 0:  # when it comes to the end
                 table_copy[figure[0]][figure[1]] = "B"
             if figure[0] - move[0] == 2 or figure[0] - move[0] == -2:
                 row = figure[0] + (move[0] - figure[0]) // 2
                 column = figure[1] + (move[1] - figure[1]) // 2
                 table_copy[row][column] = "."
         if figure_type == "c" or figure_type == "C":
-            if move[0] == 7:  # kada dodje do kraja
+            if move[0] == 7:  # when it comes to the end
                 table_copy[figure[0]][figure[1]] = "C"
             if figure[0] - move[0] == 2 or figure[0] - move[0] == -2:
                 row = figure[0] + (move[0] - figure[0]) // 2
@@ -317,14 +265,14 @@ class Position(object):
     def find_valid_moves_for_piece(self, coord, forced=False):
         captures = []
         valid_moves = []
-        # prethodno provereno da li je figure validna
+        # previously checked whether the figure is valid
         figure = self._table[coord[0]][coord[1]]
         if figure != "b":
             if 0 <= coord[0] < 7:
                 if (coord[1] - 1) >= 0:
                     if self._table[coord[0] + 1][coord[1] - 1] == '.':
                         valid_moves.append((coord[0] + 1, coord[1] - 1))
-                    # jedenje figure
+                    # eating figure
                     elif coord[0] + 2 < 8 and coord[1] - 2 >= 0:
                         if self._table[coord[0] + 2][coord[1] - 2] == '.':
                             if figure.lower() != self._table[coord[0] + 1][coord[1] - 1].lower():
@@ -333,7 +281,7 @@ class Position(object):
                 if (coord[1] + 1) < 8:
                     if self._table[coord[0] + 1][coord[1] + 1] == '.':
                         valid_moves.append((coord[0] + 1, coord[1] + 1))
-                    # jedenje figure
+                    # eating figure
                     elif coord[0] + 2 < 8 and coord[1] + 2 < 8:
                         if self._table[coord[0] + 2][coord[1] + 2] == '.':
                             if figure.lower() != self._table[coord[0] + 1][coord[1] + 1].lower():
@@ -345,7 +293,7 @@ class Position(object):
                 if (coord[1] - 1) >= 0:
                     if self._table[coord[0] - 1][coord[1] - 1] == '.':
                         valid_moves.append((coord[0] - 1, coord[1] - 1))
-                    # jedenje figure
+                    # eating figure
                     elif coord[0] - 2 >= 0 and coord[1] - 2 >= 0:
                         if self._table[coord[0] - 2][coord[1] - 2] == '.':
                             if figure.lower() != self._table[coord[0] - 1][coord[1] - 1].lower():
@@ -355,7 +303,7 @@ class Position(object):
                 if (coord[1] + 1) < 8:
                     if self._table[coord[0] - 1][coord[1] + 1] == '.':
                         valid_moves.append((coord[0] - 1, coord[1] + 1))
-                    # jedenje figure
+                    # eating figure
                     elif coord[0] - 2 >= 0 and coord[1] + 2 < 8:
                         if self._table[coord[0] - 2][coord[1] + 2] == '.':
                             if figure.lower() != self._table[coord[0] - 1][coord[1] + 1].lower():
