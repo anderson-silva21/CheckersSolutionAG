@@ -151,7 +151,6 @@ def main():
     position = Position(table, True)
     time_previous_move = 4.5
     depth = 6
-    # broj figura, i counter koliko poteza je proslo bez jedenja
     without_capture = [0, 0]
 
     while True:
@@ -175,7 +174,7 @@ def main():
         print_table(position.get_table(), piece, valid_moves)
         new_position = input_choose_field(valid_moves)
         if not new_position:
-            print("Taknuto maknuto! Doviđenja!")
+            print("invalid movement")
             break
         previous_table = deepcopy(position.get_table())
         position = position.play_move(piece, new_position)
@@ -207,7 +206,6 @@ def main():
         time_previous_move = t2 - t1
         differences = position.find_move_played(previous_table)
         print(time_previous_move)
-        # print("Dubina je {} ".format(depth))
         print_table(position.get_table(), differences)
         print("Computer played a move displayed on the table above.\n\n")
 
